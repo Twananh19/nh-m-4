@@ -10,94 +10,62 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 2; // Số lần nhấn
-  List<dynamic> _messages = [1, "hello", 2, "goodbye"]; // Dữ liệu mẫu
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter Demo Home Page'),
-        backgroundColor: Colors.purple[100],
-        centerTitle: true,
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             const Text(
               'You have pushed the button this many times:',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text(
-              '$_counter',
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
             ),
             const Text(
-              'Hello',
-              style: TextStyle(fontSize: 16),
+              '2',
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
             ),
-            Text(
-              _messages.toString(),
-              style: const TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 20),
-            // Cột màu
+            const Text('Hello'),
+            const Text('[1, hello, 2, goodbye]'),
             Column(
               children: [
                 Container(
                   width: 100,
-                  height: 100,
+                  height: 50,
                   color: Colors.red,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Red',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: const Center(child: Text('Red')),
                 ),
                 Container(
                   width: 100,
-                  height: 100,
+                  height: 50,
                   color: Colors.green,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Green',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: const Center(child: Text('Green')),
                 ),
                 Container(
                   width: 100,
-                  height: 100,
+                  height: 50,
                   color: Colors.blue,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Blue',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: const Center(child: Text('Blue')),
                 ),
                 Container(
                   width: 100,
-                  height: 100,
+                  height: 50,
                   color: Colors.cyan,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Cyan',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: const Center(child: Text('Cyan')),
                 ),
               ],
             ),
@@ -106,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Colors.purple[100],
+        tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
     );
