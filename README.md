@@ -1,3 +1,11 @@
+# Ứng dụng quản lý thư viện
+
+## Thành viên
+- Vũ Tuấn Anh
+- Lê Trường Giang
+
+## Sơ đồ chức năng
+![Ảnh demo](images/Sơ_đồ_chức_năng.png)
 # Tải mã nguồn Flutter từ GitHub (nhánh ổn định) về máy.
 git clone https://github.com/flutter/flutter.git -b stable
 
