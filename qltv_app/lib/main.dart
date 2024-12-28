@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'myClass.dart';
 
 void main() {
-  runApp(const MyApp()); // Hàm chính để chạy ứng dụng Flutter.
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -10,39 +11,43 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Thư viện điện tử', // Tiêu đề của ứng dụng.
+      title: 'Thư viện Online',
       theme: ThemeData(
-        primarySwatch: Colors.blue, // Màu chủ đạo của ứng dụng.
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(), // Giao diện chính của ứng dụng.
+      home: const HomeScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState(); // Tạo State cho StatefulWidget.
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0; // Biến lưu giá trị bộ đếm.
-  final List<dynamic> _list = [1, 'hello', 2, 'goodbye']; // Danh sách các phần tử.
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
 
-  // Hàm tăng giá trị bộ đếm.
-  void _incrementCounter() {
-    setState(() {
-      _counter++; // Tăng _counter lên 1.
-    });
-  }
+  // Danh sách sách mẫu
+  final List<Book> books = [
+    Book(bookId: 1, title: 'Dart Programming', author: 'John Doe', genre: 'Programming'),
+    Book(bookId: 2, title: 'Flutter for Beginners', author: 'Jane Smith', genre: 'Mobile Development'),
+    Book(bookId: 3, title: 'Effective Dart', author: 'Bob Johnson', genre: 'Programming'),
+  ];
 
-  // Hàm giảm giá trị bộ đếm.
-  void _decrementCounter() {
+  // Người dùng mẫu
+  final User user = User(
+    userId: 1,
+    name: 'Nguyen Van A',
+    email: 'nguyenvana@gmail.com',
+    password: '123456',
+  );
+
+  void _onItemTapped(int index) {
     setState(() {
-      if (_counter > 0) {
-        _counter--; // Giảm _counter xuống 1 nếu lớn hơn 0.
-      }
+      _selectedIndex = index;
     });
   }
 
@@ -50,101 +55,92 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thư viện điện tử'), // Tiêu đề trên AppBar.
-        backgroundColor: Colors.purple[100], // Đổi màu nền AppBar thành tím nhạt.
+        title: const Text('Thư viện Online'),
+        backgroundColor: Colors.blue,
       ),
-      body: Column(
+      body: IndexedStack(
+        index: _selectedIndex,
         children: [
-          // Thanh tìm kiếm phía trên nội dung.
-          Container(
-            padding: const EdgeInsets.all(8.0),
-            color: Colors.purple[100], // Màu nền tím nhạt.
-            // child: const Text(
-            //   'Flutter Demo Home Page',
-            //   style: TextStyle(
-            //     fontSize: 18,
-            //     fontWeight: FontWeight.bold,
-            //     color: Colors.white,
-            //   ),
-            // ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search below AppBar', // Placeholder cho thanh tìm kiếm.
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                prefixIcon: const Icon(Icons.search), // Biểu tượng tìm kiếm.
-              ),
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Canh giữa nội dung theo trục dọc.
-                children: <Widget>[
-                  const Text('You have pushed the button this many times:'), // Dòng hướng dẫn.
-                  Text(
-                    '$_counter', // Hiển thị giá trị của _counter.
-                    style: Theme.of(context).textTheme.headlineMedium, // Dùng kiểu chữ mặc định.
-                  ),
-                  const Text('Hello'), // Thêm dòng chữ "Hello".
-                  Text(
-                    _list.toString(), // Hiển thị danh sách _list.
-                    style: const TextStyle(fontStyle: FontStyle.italic), // Kiểu chữ in nghiêng.
-                  ),
-                  const SizedBox(height: 20), // Khoảng cách giữa danh sách và các ô màu.
-                  Column(
-                    mainAxisSize: MainAxisSize.min, // Chỉ chiếm không gian vừa đủ.
-                    children: [
-                      _buildColorBox('SÁCH', Colors.red), // Ô màu đỏ.
-                      _buildColorBox('TẠP CHÍ', Colors.green), // Ô màu xanh lá.
-                      _buildColorBox('LUẬN VĂN LUẬN ÁN', Colors.blue), // Ô màu xanh dương.
-                      _buildColorBox('TÀI LIỆU SỐ', Colors.cyan), // Ô màu lục lam.
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildHomeTab(),
+          _buildLibraryTab(),
+          _buildUserTab(),
         ],
       ),
-      // Row để đặt hai nút dấu "-" và "+" ngang hàng.
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end, // Canh nút về bên phải màn hình.
-        children: [
-          FloatingActionButton(
-            onPressed: _decrementCounter, // Gọi hàm giảm _counter khi bấm nút.
-            tooltip: 'Decrement', // Gợi ý khi hover vào nút.
-            child: const Icon(Icons.remove), // Icon dấu "-".
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Trang Chủ',
           ),
-          const SizedBox(width: 10), // Khoảng cách giữa hai nút.
-          FloatingActionButton(
-            onPressed: _incrementCounter, // Gọi hàm tăng _counter khi bấm nút.
-            tooltip: 'Increment', // Gợi ý khi hover vào nút.
-            child: const Icon(Icons.add), // Icon dấu "+".
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_books),
+            label: 'Thư Viện',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Người Dùng',
           ),
         ],
       ),
     );
   }
 
-  // Hàm dựng một ô màu với tên và màu sắc truyền vào.
-  Widget _buildColorBox(String label, Color color) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4), // Khoảng cách giữa các ô màu.
-      color: color, // Màu của ô.
-      width: 200, // Chiều rộng ô.
-      height: 50, // Chiều cao ô.
-      child: Center(
-        child: Text(
-          label, // Hiển thị tên màu.
-          style: const TextStyle(color: Colors.white), // Màu chữ là trắng.
-        ),
+  Widget _buildHomeTab() {
+    return Center(
+      child: Text(
+        'Chào mừng đến với Thư viện Online!',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildLibraryTab() {
+    return ListView.builder(
+      itemCount: books.length,
+      itemBuilder: (context, index) {
+        final book = books[index];
+        return ListTile(
+          leading: Icon(Icons.book, color: Colors.blue),
+          title: Text(book.title),
+          subtitle: Text('Tác giả: ${book.author}'),
+          trailing: Icon(Icons.arrow_forward),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text(book.title),
+                content: Text('Thể loại: ${book.genre}\nTác giả: ${book.author}'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Đóng'),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildUserTab() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text(
+            'Thông tin người dùng:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Text('Tên: ${user.name}'),
+          Text('Email: ${user.email}'),
+        ],
       ),
     );
   }
 }
-
