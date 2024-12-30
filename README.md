@@ -9,6 +9,9 @@
 
 ## class diagram
 ![Ảnh class diagram](image/class_diagram_mobile%20.png)
+## Giao diện app
+![Ảnh class diagram](image/Screenshot%202024-12-30%20153416.png)
+
 ## Tải mã nguồn Flutter từ GitHub (nhánh ổn định) về máy.
 git clone https://github.com/flutter/flutter.git -b stable
 
