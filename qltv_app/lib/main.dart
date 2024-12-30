@@ -112,8 +112,61 @@ class _HomeScreenState extends State<HomeScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text(book.title),
-                content: Text('Thể loại: ${book.genre}\nTác giả: ${book.author}'),
+                content: Text('Thể loại: ${book.genre}\nTác giả: ${book.author}\nTrạng thái: ${book.availability ? "Còn" : "Hết"}'),
                 actions: [
+                  TextButton(
+                    onPressed: () {
+                      if (book.availability) {
+                        Loan loan = Loan(
+                          loanId: 1,
+                          user: user,
+                          book: book,
+                          loanDate: DateTime.now(),
+                        );
+                        loan.borrowBook();
+                        setState(() {}); // Cập nhật trạng thái sách
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${book.title} hiện không có sẵn.')),
+                        );
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Mượn'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (!book.availability) {
+                        Loan loan = Loan(
+                          loanId: 1,
+                          user: user,
+                          book: book,
+                          loanDate: DateTime.now(),
+                        );
+                        loan.returnBook();
+                        setState(() {}); // Cập nhật trạng thái sách
+                      }
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Trả'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      final review = Review(
+                        reviewId: 1,
+                        user: user,
+                        book: book,
+                        rating: 5,
+                        comment: 'Rất hay và bổ ích!',
+                      );
+                      review.addReview();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Đánh giá của bạn đã được thêm!')),
+                      );
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Thêm Đánh Giá'),
+                  ),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: const Text('Đóng'),
@@ -128,6 +181,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildUserTab() {
+    final payment = Payment(
+      paymentId: 1,
+      user: user,
+      amount: 50.0,
+      paymentDate: DateTime.now(),
+    );
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -139,6 +199,19 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 10),
           Text('Tên: ${user.name}'),
           Text('Email: ${user.email}'),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              payment.processPayment();
+            },
+            child: const Text('Xử lý thanh toán'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              payment.viewPaymentHistory();
+            },
+            child: const Text('Xem lịch sử thanh toán'),
+          ),
         ],
       ),
     );
