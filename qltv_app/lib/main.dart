@@ -54,16 +54,68 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Thư viện Online'),
-        backgroundColor: Colors.blue,
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
+      body: Column(
         children: [
-          _buildHomeTab(),
-          _buildLibraryTab(),
-          _buildUserTab(),
+          // AppBar tùy chỉnh
+          Container(
+            color: Colors.blue,
+            padding: const EdgeInsets.only(top: 40, bottom: 16, left: 16, right: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Thư viện Online',
+                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedIndex = 2; // Chuyển sang tab "Người Dùng"
+                    });
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        'https://cafebiz.cafebizcdn.vn/162123310254002176/2024/11/29/screenshot-2024-11-28-220303-1732868068648-17328680695361692082549.png'),
+                    radius: 24,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Thanh tìm kiếm
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Tìm kiếm sách...',
+                border: InputBorder.none,
+                prefixIcon: Icon(Icons.search, color: Colors.grey),
+              ),
+            ),
+          ),
+          // Nội dung chính
+          Expanded(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildHomeTab(),
+                _buildLibraryTab(),
+                _buildUserTab(),
+              ],
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
