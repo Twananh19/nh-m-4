@@ -5,10 +5,10 @@
 - Lê Trường Giang
 
 ## Sơ đồ chức năng
-![Ảnh ](image/class_diagram_mobile%20.png)
+![Ảnh ](image/Sơ_đồ_chức_năng.png)
 
 ## class diagram
-![Ảnh class diagram](image/class_diagram_mobile.png)
+![Ảnh class diagram](image/class_diagram_mobile%20.png)
 ## Tải mã nguồn Flutter từ GitHub (nhánh ổn định) về máy.
 git clone https://github.com/flutter/flutter.git -b stable
 
