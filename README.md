@@ -8,7 +8,7 @@
 ![Ảnh ](image/Sơ_đồ_chức_năng.png)
 
 ## class diagram
-![Ảnh class diagram](image/)
+![Ảnh class diagram](image/class_diagram_mobile.png)
 ## Giao diện app
 ![Ảnh class diagram](image/Screenshot%202024-12-30%20153416.png)
 
