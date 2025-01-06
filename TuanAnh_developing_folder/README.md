@@ -51,3 +51,7 @@ TuanAnh_developing_folder/
 |- lib/
    |- main.dart
    |- myClass.dart
+```
+
+## Ảnh giao diện app
+![Ảnh ](image/Screenshot%202025-01-06%20151238.png)
