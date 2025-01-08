@@ -9,6 +9,9 @@
 
 ## class diagram
 ![Ảnh class diagram](image/class_diagram_mobile.png)
+
+## Sequence Diagram
+![Ảnh ](image/sequeDia.png)
 ## Giao diện app
 ![Ảnh class diagram](image/Screenshot%202024-12-30%20153416.png)
 
