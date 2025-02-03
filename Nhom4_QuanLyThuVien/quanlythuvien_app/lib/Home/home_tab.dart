@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'about_tab.dart';
+import 'notification_tab.dart';
+import 'service_tab.dart';
+import 'contact_tab.dart';
 
 class HomeTab extends StatelessWidget {
   final List<Map<String, String>> newsList = [
@@ -14,29 +17,6 @@ class HomeTab extends StatelessWidget {
       'imageURL': 'https://picsum.photos/300/200?random=2',
       'date': '31/12/2024',
     },
-    
-    {
-      'title': 'Những con số ấn tượng năm 2024',
-      'imageURL': 'https://picsum.photos/300/200?random=3',
-      'date': '6/1/2025',
-    },
-    {
-      'title': 'Chúc mừng năm mới 2025',
-      'imageURL': 'https://picsum.photos/300/200?random=4',
-      'date': '31/12/2024',
-    },
-    
-    {
-      'title': 'Những con số ấn tượng năm 2024',
-      'imageURL': 'https://picsum.photos/300/200?random=5',
-      'date': '6/1/2025',
-    },
-    {
-      'title': 'Chúc mừng năm mới 2025',
-      'imageURL': 'https://picsum.photos/300/200?random=6',
-      'date': '31/12/2024',
-    },
-    
     // More news items
   ];
 
@@ -49,26 +29,6 @@ class HomeTab extends StatelessWidget {
     {
       'title': 'Tổng kết dự án XYZ',
       'imageURL': 'https://picsum.photos/200/140?random=8',
-      'date': '20/5/2024',
-    },
-    {
-      'title': 'Báo cáo quý 1 năm 2024',
-      'imageURL': 'https://picsum.photos/200/140?random=9',
-      'date': '15/3/2024',
-    },
-    {
-      'title': 'Tổng kết dự án XYZ',
-      'imageURL': 'https://picsum.photos/200/140?random=10',
-      'date': '20/5/2024',
-    },
-    {
-      'title': 'Báo cáo quý 1 năm 2024',
-      'imageURL': 'https://picsum.photos/200/140?random=11',
-      'date': '15/3/2024',
-    },
-    {
-      'title': 'Tổng kết dự án XYZ',
-      'imageURL': 'https://picsum.photos/200/140?random=12',
       'date': '20/5/2024',
     },
     // More document items
@@ -86,7 +46,7 @@ class HomeTab extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildIconRow(context), // Truyền context đúng
+                _buildIconRow(context),
                 const SizedBox(height: 24),
                 _buildNewsSection('Tin tức', newsList),
                 const SizedBox(height: 24),
@@ -117,7 +77,7 @@ class HomeTab extends StatelessWidget {
                 children: const [
                   Text('Anh Vu Tuan',
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   Text('22010203',
                       style: TextStyle(fontSize: 16, color: Colors.grey)),
                 ],
@@ -175,9 +135,9 @@ class HomeTab extends StatelessWidget {
       children: [
         _buildIconWithLabel(context, Icons.info_outline, 'Giới thiệu'),
         _buildIconWithLabel(context, Icons.notifications, 'Thông báo'),
-        _buildIconWithLabel(context, Icons.info_outline, 'Dịch vụ'),
-        _buildIconWithLabel(context, Icons.notifications, 'Biểu mẫu'),
-        _buildIconWithLabel(context, Icons.info_outline, 'Liên hệ'),
+        _buildIconWithLabel(context, Icons.settings_suggest, 'Dịch vụ'),
+        _buildIconWithLabel(context, Icons.description, 'Biểu mẫu'),
+        _buildIconWithLabel(context, Icons.phone, 'Liên hệ'),
       ],
     );
   }
@@ -188,9 +148,25 @@ class HomeTab extends StatelessWidget {
         if (label == 'Giới thiệu') {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AboutTab()), // Giả sử AboutTab đã được tạo đúng
+            MaterialPageRoute(builder: (context) => AboutTab()),
           );
-        } else {
+        } else if (label == 'Thông báo') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NotificationTab()), // Chuyển đến NotificationTab
+          );
+        }  else if (label == 'Dịch vụ') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ServiceTab()), // Chuyển đến NotificationTab
+          );
+        }  else if (label == 'Liên hệ') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ContactTab()), // Chuyển đến NotificationTab
+          );
+        }
+        else {
           print('Nhấn vào $label');
         }
       },
@@ -303,7 +279,7 @@ class HomeTab extends StatelessWidget {
                   Text(
                     item['date']!,
                     style:
-                        TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -314,4 +290,3 @@ class HomeTab extends StatelessWidget {
     );
   }
 }
-
