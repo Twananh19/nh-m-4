@@ -3,6 +3,9 @@ import 'Home/home_tab.dart';
 import 'digital_library_tab.dart';
 import 'e_library_tab.dart';
 import 'profile_tab.dart';
+import '/login.dart';
+import 'user.dart';
+import 'library_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Thư viện Online',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const HomeScreen(),
+      home: LoginScreen(),
     );
   }
 }
@@ -45,8 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           HomeTab(),
           DigitalLibraryTab(),
-          ELibraryTab(),
-          ProfileTab(),
+          LibraryScreen(),
+          UserScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -60,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang Chủ'),
           BottomNavigationBarItem(icon: Icon(Icons.library_books), label: 'Thư Viện Số'),
-          BottomNavigationBarItem(icon: Icon(Icons.book_online), label: 'Thư Viện Điện Tử'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Cá Nhân'),
+          BottomNavigationBarItem(icon: Icon(Icons.book_online), label: 'Thư viện điện tử'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Cá nhân'),
         ],
       ),
     );
