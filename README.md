@@ -5,7 +5,7 @@
 - Lê Trường Giang
 
 ## Sơ đồ chức năng
-![Ảnh ](image/Sơ_đồ_chức_năng.png)
+![Ảnh ](image/sodochucnang.drawio.png)
 
 ## class diagram
 ![Ảnh class diagram](image/class_diagram_mobile.png)
