@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
 
@@ -10,22 +11,38 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleLogin() {
-    // Navigate to LibraryScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomeScreen()),
-    );
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      // Không gọi Navigator.pushReplacement, để StreamBuilder tự chuyển hướng
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message;
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -37,14 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo
               Image.asset(
                 'assets/phenikaa_logo.png',
                 height: 80,
               ),
               const SizedBox(height: 40),
-
-              // Login Title
               const Text(
                 'Đăng nhập PU-LIC',
                 style: TextStyle(
@@ -54,12 +68,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Username TextField
               TextField(
-                controller: _usernameController,
+                controller: _emailController,
                 decoration: const InputDecoration(
-                  hintText: 'Tên đăng nhập',
+                  hintText: 'Email',
                   filled: true,
                   fillColor: Color(0xFFF5F6FA),
                   border: OutlineInputBorder(
@@ -69,8 +81,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Password TextField
               TextField(
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
@@ -84,9 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                       color: const Color(0xFFFF6B00),
                     ),
                     onPressed: () {
@@ -97,13 +105,18 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ],
               const SizedBox(height: 24),
-
-              // Login Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1A237E),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -111,49 +124,35 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text(
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
                     'Đăng nhập',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Forgot Password and Change Password Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: () {
-                      // Add forgot password logic
-                    },
+                    onPressed: () {},
                     child: const Text(
                       'Quên mật khẩu?',
-                      style: TextStyle(
-                        color: Color(0xFF1A237E),
-                      ),
+                      style: TextStyle(color: Color(0xFF1A237E)),
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      // Add change password logic
-                    },
+                    onPressed: () {},
                     child: const Text(
                       'Đổi mật khẩu',
-                      style: TextStyle(
-                        color: Color(0xFF1A237E),
-                      ),
+                      style: TextStyle(color: Color(0xFF1A237E)),
                     ),
                   ),
                 ],
               ),
-
               const Spacer(),
-
-              // Footer
               const Text(
                 'All rights reserved Phenikaa University',
                 style: TextStyle(color: Colors.grey),

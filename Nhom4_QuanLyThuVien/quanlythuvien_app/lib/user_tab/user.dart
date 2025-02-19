@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'account_profile.dart';
 import 'coming_soon.dart';
 import '../login.dart';
@@ -17,33 +18,20 @@ class UserScreen extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                _buildListTile(Icons.person, 'Thông tin tài khoản',
-                    AccountProfileScreen(), context),
-                _buildListTile(Icons.credit_card, 'Thẻ thư viện',
-                    ComingSoonScreen('Thẻ thư viện'), context),
-                _buildListTile(Icons.info, 'Thông tin chung',
-                    ComingSoonScreen('Thông tin chung'), context),
-                _buildListTile(Icons.attach_money, 'Tiền phạt',
-                    ComingSoonScreen('Tiền phạt'), context),
-                _buildListTile(Icons.history, 'Lịch sử tìm kiếm',
-                    ComingSoonScreen('Lịch sử tìm kiếm'), context),
-                _buildListTile(Icons.history_toggle_off, 'Lịch sử ghi mượn',
-                    ComingSoonScreen('Lịch sử ghi mượn'), context),
-                _buildListTile(Icons.shopping_cart, 'Đề xuất mua',
-                    ComingSoonScreen('Đề xuất mua'), context),
-                _buildListTile(Icons.school, 'Xác nhận ra trường',
-                    ComingSoonScreen('Xác nhận ra trường'), context),
+                _buildListTile(Icons.person, 'Thông tin tài khoản', AccountProfileScreen(), context),
+                _buildListTile(Icons.credit_card, 'Thẻ thư viện', ComingSoonScreen('Thẻ thư viện'), context),
+                _buildListTile(Icons.info, 'Thông tin chung', ComingSoonScreen('Thông tin chung'), context),
+                _buildListTile(Icons.attach_money, 'Tiền phạt', ComingSoonScreen('Tiền phạt'), context),
+                _buildListTile(Icons.history, 'Lịch sử tìm kiếm', ComingSoonScreen('Lịch sử tìm kiếm'), context),
+                _buildListTile(Icons.history_toggle_off, 'Lịch sử ghi mượn', ComingSoonScreen('Lịch sử ghi mượn'), context),
+                _buildListTile(Icons.shopping_cart, 'Đề xuất mua', ComingSoonScreen('Đề xuất mua'), context),
+                _buildListTile(Icons.school, 'Xác nhận ra trường', ComingSoonScreen('Xác nhận ra trường'), context),
                 Divider(),
-                _buildListTile(Icons.settings, 'Cài đặt',
-                    ComingSoonScreen('Cài đặt'), context),
-                _buildListTile(Icons.feedback, 'Góp ý',
-                    ComingSoonScreen('Góp ý'), context),
-                _buildListTile(Icons.error, 'Báo lỗi',
-                    ComingSoonScreen('Báo lỗi'), context),
-                _buildListTile(Icons.info_outline, 'Về PULIC',
-                    ComingSoonScreen('Về Pulic'), context),
-                _buildListTile(Icons.book, "Hướng dẫn sử dụng",
-                    ComingSoonScreen('Tính năng'), context),
+                _buildListTile(Icons.settings, 'Cài đặt', ComingSoonScreen('Cài đặt'), context),
+                _buildListTile(Icons.feedback, 'Góp ý', ComingSoonScreen('Góp ý'), context),
+                _buildListTile(Icons.error, 'Báo lỗi', ComingSoonScreen('Báo lỗi'), context),
+                _buildListTile(Icons.info_outline, 'Về PULIC', ComingSoonScreen('Về Pulic'), context),
+                _buildListTile(Icons.book, "Hướng dẫn sử dụng", ComingSoonScreen('Tính năng'), context),
               ],
             ),
           ),
@@ -73,7 +61,8 @@ class UserScreen extends StatelessWidget {
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.bold
+                ),
               ),
               Text(
                 '22010224',
@@ -90,8 +79,7 @@ class UserScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildListTile(
-      IconData icon, String title, Widget screen, BuildContext context) {
+  Widget _buildListTile(IconData icon, String title, Widget screen, BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue[700]),
       title: Text(title),
@@ -131,14 +119,10 @@ class UserScreen extends StatelessWidget {
               child: Text('Hủy'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context); // Đóng dialog
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(),
-                  ),
-                );
+                await FirebaseAuth.instance.signOut();
+                // Không cần gọi Navigator.pushReplacement, StreamBuilder sẽ chuyển về LoginScreen
               },
               child: Text('Đăng xuất'),
             ),

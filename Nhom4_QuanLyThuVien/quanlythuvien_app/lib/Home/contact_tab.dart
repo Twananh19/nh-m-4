@@ -156,8 +156,8 @@ class ContactTab extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  'https://minhtuanmobile.com/uploads/blog/mang-doraemon-dang-yeu-ve-tren-man-hinh-dien-thoai-back-up-240531043828.jpg',
+                child: Image.asset(
+                  'assets/location.png',
                   fit: BoxFit.cover,
                 ),
               ),

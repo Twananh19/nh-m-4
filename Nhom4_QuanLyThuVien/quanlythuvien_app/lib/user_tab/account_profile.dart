@@ -28,13 +28,13 @@ class AccountProfileScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Text(
-              'Giang Le Truong',
+              'Nhom 4 - Quan Ly Thu Vien',
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue),
             ),
-            Text('22010224',
+            Text('Mobile App Dev (N05)',
                 style: TextStyle(fontSize: 16, color: Colors.black54)),
             SizedBox(height: 20),
             buildSectionTitle('Thông tin cá nhân'),

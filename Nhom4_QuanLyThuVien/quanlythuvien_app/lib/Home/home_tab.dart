@@ -15,15 +15,17 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  // Tham chiếu đến 2 collection trên Firestore
+  // Tham chiếu đến các collection trên Firestore
   final CollectionReference newsCollection =
   FirebaseFirestore.instance.collection('news');
   final CollectionReference featuredDocsCollection =
   FirebaseFirestore.instance.collection('featuredDocs');
 
-  //====================//
-  // 1. Các hàm xử lý CRUD cho News
-  //====================//
+  //=======================================//
+  // 1. Các hàm xử lý CRUD cho Tin tức (News)
+  //=======================================//
+
+  // Hàm hiển thị dialog thêm Tin tức
   Future<void> _showAddNewsDialog() async {
     final titleController = TextEditingController();
     final dateController = TextEditingController();
@@ -41,14 +43,10 @@ class _HomeTabState extends State<HomeTab> {
                   controller: titleController,
                   decoration: const InputDecoration(labelText: 'Tiêu đề'),
                 ),
-                // Sử dụng Date Picker để chọn ngày
                 TextField(
                   controller: dateController,
+                  decoration: const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
                   readOnly: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Ngày (dd/MM/yyyy)',
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
@@ -57,7 +55,8 @@ class _HomeTabState extends State<HomeTab> {
                       lastDate: DateTime(2100),
                     );
                     if (pickedDate != null) {
-                      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+                      String formattedDate =
+                      DateFormat('dd/MM/yyyy').format(pickedDate);
                       dateController.text = formattedDate;
                     }
                   },
@@ -76,7 +75,6 @@ class _HomeTabState extends State<HomeTab> {
             ),
             ElevatedButton(
               onPressed: () async {
-                // Kiểm tra dữ liệu nhập
                 if (titleController.text.isEmpty ||
                     dateController.text.isEmpty ||
                     imageURLController.text.isEmpty) {
@@ -85,12 +83,12 @@ class _HomeTabState extends State<HomeTab> {
                   );
                   return;
                 }
-
                 try {
                   await newsCollection.add({
                     'title': titleController.text,
                     'date': dateController.text,
                     'imageURL': imageURLController.text,
+                    'createdAt': FieldValue.serverTimestamp(), // để sắp xếp tin tức
                   });
                   Navigator.pop(context);
                 } catch (error) {
@@ -108,11 +106,12 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
+  // Hàm hiển thị dialog sửa Tin tức
   Future<void> _showEditNewsDialog(DocumentSnapshot doc) async {
-    final titleController = TextEditingController(text: doc['title']);
-    final dateController = TextEditingController(text: doc['date']);
-    final imageURLController =
-    TextEditingController(text: doc['imageURL']);
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    final titleController = TextEditingController(text: data['title'] ?? '');
+    final dateController = TextEditingController(text: data['date'] ?? '');
+    final imageURLController = TextEditingController(text: data['imageURL'] ?? '');
 
     return showDialog<void>(
       context: context,
@@ -128,13 +127,11 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 TextField(
                   controller: dateController,
-                  decoration:
-                  const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
+                  decoration: const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
                 ),
                 TextField(
                   controller: imageURLController,
-                  decoration:
-                  const InputDecoration(labelText: 'URL hình ảnh'),
+                  decoration: const InputDecoration(labelText: 'URL hình ảnh'),
                 ),
               ],
             ),
@@ -161,6 +158,7 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
+  // Hàm xóa Tin tức
   Future<void> _deleteNews(String docId) async {
     return showDialog<void>(
       context: context,
@@ -186,9 +184,11 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  //====================//
-  // 2. Các hàm xử lý CRUD cho FeaturedDocs
-  //====================//
+  //===============================================//
+  // 2. Các hàm xử lý CRUD cho Tài liệu nổi bật (Featured Docs)
+  //===============================================//
+
+  // Hàm hiển thị dialog thêm Tài liệu nổi bật
   Future<void> _showAddFeaturedDocsDialog() async {
     final titleController = TextEditingController();
     final dateController = TextEditingController();
@@ -208,11 +208,8 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 TextField(
                   controller: dateController,
+                  decoration: const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
                   readOnly: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Ngày (dd/MM/yyyy)',
-                    suffixIcon: Icon(Icons.calendar_today),
-                  ),
                   onTap: () async {
                     DateTime? pickedDate = await showDatePicker(
                       context: context,
@@ -221,15 +218,15 @@ class _HomeTabState extends State<HomeTab> {
                       lastDate: DateTime(2100),
                     );
                     if (pickedDate != null) {
-                      String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
+                      String formattedDate =
+                      DateFormat('dd/MM/yyyy').format(pickedDate);
                       dateController.text = formattedDate;
                     }
                   },
                 ),
                 TextField(
                   controller: imageURLController,
-                  decoration:
-                  const InputDecoration(labelText: 'URL hình ảnh'),
+                  decoration: const InputDecoration(labelText: 'URL hình ảnh'),
                 ),
               ],
             ),
@@ -256,11 +253,12 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
+  // Hàm hiển thị dialog sửa Tài liệu nổi bật
   Future<void> _showEditFeaturedDocsDialog(DocumentSnapshot doc) async {
-    final titleController = TextEditingController(text: doc['title']);
-    final dateController = TextEditingController(text: doc['date']);
-    final imageURLController =
-    TextEditingController(text: doc['imageURL']);
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    final titleController = TextEditingController(text: data['title'] ?? '');
+    final dateController = TextEditingController(text: data['date'] ?? '');
+    final imageURLController = TextEditingController(text: data['imageURL'] ?? '');
 
     return showDialog<void>(
       context: context,
@@ -276,13 +274,11 @@ class _HomeTabState extends State<HomeTab> {
                 ),
                 TextField(
                   controller: dateController,
-                  decoration:
-                  const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
+                  decoration: const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
                 ),
                 TextField(
                   controller: imageURLController,
-                  decoration:
-                  const InputDecoration(labelText: 'URL hình ảnh'),
+                  decoration: const InputDecoration(labelText: 'URL hình ảnh'),
                 ),
               ],
             ),
@@ -309,6 +305,7 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
+  // Hàm xóa Tài liệu nổi bật
   Future<void> _deleteFeaturedDocs(String docId) async {
     return showDialog<void>(
       context: context,
@@ -334,9 +331,10 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  //====================//
-  // UI - HEADER & ICON ROW (không thay đổi)
-  //====================//
+  //================================//
+  // UI - HEADER & ICON ROW
+  //================================//
+
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -354,8 +352,7 @@ class _HomeTabState extends State<HomeTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text('Anh Vu Tuan',
-                      style:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   Text('22010203',
                       style: TextStyle(fontSize: 16, color: Colors.grey)),
                 ],
@@ -368,8 +365,7 @@ class _HomeTabState extends State<HomeTab> {
                     onPressed: () async {
                       final Uri url = Uri.parse('https://mail.google.com/');
                       if (await canLaunchUrl(url)) {
-                        await launchUrl(url,
-                            mode: LaunchMode.externalApplication);
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
                       } else {
                         throw 'Không thể mở liên kết Gmail.';
                       }
@@ -380,8 +376,7 @@ class _HomeTabState extends State<HomeTab> {
                     onPressed: () async {
                       final Uri url = Uri.parse('https://www.messenger.com/');
                       if (await canLaunchUrl(url)) {
-                        await launchUrl(url,
-                            mode: LaunchMode.externalApplication);
+                        await launchUrl(url, mode: LaunchMode.externalApplication);
                       } else {
                         throw 'Không thể mở liên kết Messenger.';
                       }
@@ -422,30 +417,17 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _buildIconWithLabel(
-      BuildContext context, IconData icon, String label) {
+  Widget _buildIconWithLabel(BuildContext context, IconData icon, String label) {
     return InkWell(
       onTap: () {
         if (label == 'Giới thiệu') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AboutTab()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AboutTab()));
         } else if (label == 'Thông báo') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const NotificationTab()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationTab()));
         } else if (label == 'Dịch vụ') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ServiceTab()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const ServiceTab()));
         } else if (label == 'Liên hệ') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ContactTab()),
-          );
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const ContactTab()));
         } else {
           print('Nhấn vào $label');
         }
@@ -466,23 +448,22 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  //====================//
+  //================================//
   // UI - Mục Tin Tức (News)
-  //====================//
+  //================================//
+
   Widget _buildNewsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header của mục Tin tức có thêm nút "Thêm"
+        // Header của mục Tin tức có nút "Thêm"
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Tin tức',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              const Text('Tin tức',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Row(
                 children: [
                   GestureDetector(
@@ -496,11 +477,9 @@ class _HomeTabState extends State<HomeTab> {
                       children: const [
                         Text(
                           'Xem thêm',
-                          style:
-                          TextStyle(fontSize: 16, color: Colors.orange),
+                          style: TextStyle(fontSize: 16, color: Colors.orange),
                         ),
-                        Icon(Icons.arrow_forward_ios,
-                            size: 14, color: Colors.orange),
+                        Icon(Icons.arrow_forward_ios, size: 14, color: Colors.orange),
                       ],
                     ),
                   ),
@@ -513,30 +492,25 @@ class _HomeTabState extends State<HomeTab> {
         SizedBox(
           height: 220,
           child: StreamBuilder<QuerySnapshot>(
-            stream: newsCollection.snapshots(),
+            // Sắp xếp theo createdAt để tin tức mới nhất xuất hiện đầu tiên
+            stream: newsCollection.orderBy('createdAt', descending: true).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(child: Text('Lỗi: ${snapshot.error}'));
               }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final docs = snapshot.data!.docs;
-              if (docs.isEmpty) {
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(child: Text('Không có tin tức nào'));
               }
+              final docs = snapshot.data!.docs;
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: docs.length,
                 itemBuilder: (context, index) {
                   final doc = docs[index];
-                  final data = doc.data() as Map<String, dynamic>;
-                  return _buildItemCard(
-                    data: data,
-                    isFeaturedDocs: false,
-                    doc: doc,
-                    isNews: true,
-                  );
+                  final rawData = doc.data();
+                  if (rawData == null) return Container();
+                  final data = rawData as Map<String, dynamic>;
+                  return _buildItemCard(doc: doc, data: data, isFeaturedDocs: false, isNews: true);
                 },
               );
             },
@@ -546,23 +520,22 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  //====================//
+  //================================//
   // UI - Mục Tài liệu nổi bật (Featured Docs)
-  //====================//
+  //================================//
+
   Widget _buildFeaturedDocsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header của mục Tài liệu nổi bật có thêm nút "Thêm"
+        // Header của mục Tài liệu nổi bật có nút "Thêm"
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Tài liệu nổi bật',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
+              const Text('Tài liệu nổi bật',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Row(
                 children: [
                   GestureDetector(
@@ -571,17 +544,14 @@ class _HomeTabState extends State<HomeTab> {
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
-                    onTap: () =>
-                        print('Chuyển sang trang danh sách Tài liệu nổi bật'),
+                    onTap: () => print('Chuyển sang trang danh sách Tài liệu nổi bật'),
                     child: Row(
                       children: const [
                         Text(
                           'Xem thêm',
-                          style:
-                          TextStyle(fontSize: 16, color: Colors.orange),
+                          style: TextStyle(fontSize: 16, color: Colors.orange),
                         ),
-                        Icon(Icons.arrow_forward_ios,
-                            size: 14, color: Colors.orange),
+                        Icon(Icons.arrow_forward_ios, size: 14, color: Colors.orange),
                       ],
                     ),
                   ),
@@ -599,25 +569,19 @@ class _HomeTabState extends State<HomeTab> {
               if (snapshot.hasError) {
                 return Center(child: Text('Lỗi: ${snapshot.error}'));
               }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final docs = snapshot.data!.docs;
-              if (docs.isEmpty) {
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(child: Text('Không có tài liệu nào'));
               }
+              final docs = snapshot.data!.docs;
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: docs.length,
                 itemBuilder: (context, index) {
                   final doc = docs[index];
-                  final data = doc.data() as Map<String, dynamic>;
-                  return _buildItemCard(
-                    data: data,
-                    isFeaturedDocs: true,
-                    doc: doc,
-                    isNews: false,
-                  );
+                  final rawData = doc.data();
+                  if (rawData == null) return Container();
+                  final data = rawData as Map<String, dynamic>;
+                  return _buildItemCard(doc: doc, data: data, isFeaturedDocs: true, isNews: false);
                 },
               );
             },
@@ -627,15 +591,21 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  //====================//
-  // Widget hiển thị 1 card (dùng chung cho Tin tức và Tài liệu nổi bật)
-  //====================//
+  //================================//
+  // Widget hiển thị 1 card (cho cả Tin tức & Tài liệu nổi bật)
+  //================================//
+
   Widget _buildItemCard({
+    required DocumentSnapshot doc,
     required Map<String, dynamic> data,
     required bool isFeaturedDocs,
-    required DocumentSnapshot doc,
     required bool isNews,
   }) {
+    // Nếu không có URL hợp lệ, sử dụng placeholder
+    final imageUrl = (data['imageURL'] == null || data['imageURL'].toString().trim().isEmpty)
+        ? 'https://via.placeholder.com/300x200.png?text=No+Image'
+        : data['imageURL'];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Stack(
@@ -656,15 +626,14 @@ class _HomeTabState extends State<HomeTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Hình ảnh với bo tròn ở 2 góc trên
+                  // Hình ảnh với bo tròn ở góc trên
                   ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10),
                       topRight: Radius.circular(10),
                     ),
                     child: Image.network(
-                      data['imageURL'] ??
-                          'https://picsum.photos/300/200?random=default',
+                      imageUrl,
                       height: isFeaturedDocs ? 100 : 140,
                       width: double.infinity,
                       fit: BoxFit.cover,
@@ -686,14 +655,12 @@ class _HomeTabState extends State<HomeTab> {
                           data['title'] ?? 'Chưa có tiêu đề',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           data['date'] ?? 'Chưa có ngày',
-                          style: TextStyle(
-                              fontSize: 12, color: Colors.grey[600]),
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
                       ],
                     ),
@@ -702,7 +669,7 @@ class _HomeTabState extends State<HomeTab> {
               ),
             ),
           ),
-          // Popup menu cho Sửa/Xóa
+          // Popup menu Sửa/Xóa
           Positioned(
             top: 0,
             right: 0,
@@ -739,9 +706,10 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  //====================//
+  //================================//
   // Build giao diện tổng thể của HomeTab
-  //====================//
+  //================================//
+
   @override
   Widget build(BuildContext context) {
     return Column(
