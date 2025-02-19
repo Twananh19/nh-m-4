@@ -1,24 +1,149 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class NotificationTab extends StatelessWidget {
-  final List<Map<String, String>> notifications = [
-    {'title': 'Ra mắt sách mới: "Hành trình tri thức"', 'date': '05/01/2025'},
-    {'title': 'Giảm giá đặc biệt 50% cho sách khoa học', 'date': '10/01/2025'},
-    {'title': 'Buổi ký tặng sách: "Tác giả A"', 'date': '15/01/2025'},
-    {'title': 'Cuộc thi viết cảm nhận về sách tháng 2', 'date': '20/01/2025'},
-    {'title': 'Cập nhật danh mục sách lịch sử', 'date': '25/01/2025'},
-    {'title': 'Workshop: Phương pháp đọc nhanh hiệu quả', 'date': '30/01/2025'},
-    {'title': 'Tặng sách miễn phí cho thành viên mới', 'date': '05/02/2025'},
-    {'title': 'Sự kiện giao lưu cùng nhà văn nổi tiếng', 'date': '10/02/2025'},
-    {'title': 'Top 10 cuốn sách bán chạy nhất tháng 1', 'date': '15/02/2025'},
-    {'title': 'Thảo luận nhóm: "Tương lai ngành xuất bản"', 'date': '20/02/2025'},
-  ];
+class NotificationTab extends StatefulWidget {
+  const NotificationTab({Key? key}) : super(key: key);
 
-  // Danh sách ánh xạ số tháng thành tên tháng
-  final List<String> monthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+  @override
+  _NotificationTabState createState() => _NotificationTabState();
+}
+
+class _NotificationTabState extends State<NotificationTab> {
+  // Trỏ tới collection "notifications" trong Firestore
+  final CollectionReference notificationsCollection =
+  FirebaseFirestore.instance.collection('notifications');
+
+  // Hàm hiển thị dialog thêm thông báo
+  Future<void> _showAddNotificationDialog() async {
+    final titleController = TextEditingController();
+    final dateController = TextEditingController();
+    final imageURLController = TextEditingController();
+
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Thêm thông báo'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: 'Tiêu đề'),
+                ),
+                TextField(
+                  controller: dateController,
+                  decoration: const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
+                ),
+                TextField(
+                  controller: imageURLController,
+                  decoration: const InputDecoration(labelText: 'URL hình ảnh'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await notificationsCollection.add({
+                  'title': titleController.text,
+                  'date': dateController.text,
+                  'imageURL': imageURLController.text,
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Thêm'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Hàm hiển thị dialog sửa thông báo
+  Future<void> _showEditNotificationDialog(DocumentSnapshot doc) async {
+    final titleController = TextEditingController(text: doc['title']);
+    final dateController = TextEditingController(text: doc['date']);
+    final imageURLController = TextEditingController(text: doc['imageURL']);
+
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Sửa thông báo'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(labelText: 'Tiêu đề'),
+                ),
+                TextField(
+                  controller: dateController,
+                  decoration: const InputDecoration(labelText: 'Ngày (dd/mm/yyyy)'),
+                ),
+                TextField(
+                  controller: imageURLController,
+                  decoration: const InputDecoration(labelText: 'URL hình ảnh'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await notificationsCollection.doc(doc.id).update({
+                  'title': titleController.text,
+                  'date': dateController.text,
+                  'imageURL': imageURLController.text,
+                });
+                Navigator.pop(context);
+              },
+              child: const Text('Lưu'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Hàm xóa thông báo
+  Future<void> _deleteNotification(String docId) async {
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Xóa thông báo'),
+          content: const Text('Bạn có chắc chắn muốn xóa thông báo này?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await notificationsCollection.doc(docId).delete();
+                Navigator.pop(context);
+              },
+              child: const Text('Xóa'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +152,8 @@ class NotificationTab extends StatelessWidget {
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: Container(
           decoration: BoxDecoration(
-            // color: Colors.white, // Màu nền cho AppBar
             border: Border(
-              bottom: BorderSide(color: Colors.grey.shade300, width: 1.0), // Viền dưới màu xám nhạt
+              bottom: BorderSide(color: Colors.grey.shade300, width: 1.0),
             ),
           ),
           child: AppBar(
@@ -38,63 +162,138 @@ class NotificationTab extends StatelessWidget {
               style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
-            backgroundColor: Colors.transparent, // Đặt màu nền AppBar trong suốt vì đã có màu của Container
-            elevation: 0, // Xóa bóng của AppBar để giữ hiệu ứng viền
+            backgroundColor: Colors.transparent,
+            elevation: 0,
           ),
         ),
       ),
-      body: ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          final dateParts = notification['date']!.split('/');
-          final day = dateParts[0]; // Ngày
-          final monthIndex = int.parse(dateParts[1]) - 1; // Số tháng (0-based)
-          final month = monthNames[monthIndex]; // Lấy tên tháng
+      body: StreamBuilder<QuerySnapshot>(
+        stream: notificationsCollection.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Đã xảy ra lỗi'));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final docs = snapshot.data!.docs;
 
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child: ListTile(
-              leading: Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.orange,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+          if (docs.isEmpty) {
+            return const Center(child: Text('Không có thông báo nào'));
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: GridView.builder(
+              itemCount: docs.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // Số cột của grid
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                childAspectRatio: 3 / 4,
+              ),
+              itemBuilder: (context, index) {
+                final doc = docs[index];
+                final data = doc.data() as Map<String, dynamic>;
+
+                return Stack(
                   children: [
-                    Text(
-                      month,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          // Bấm vào card để sửa thông báo
+                          _showEditNotificationDialog(doc);
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Hình ảnh với bo tròn ở 2 góc trên
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                topRight: Radius.circular(10),
+                              ),
+                              child: Image.network(
+                                data['imageURL'] ?? '',
+                                height: 140,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 140,
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.broken_image, size: 50),
+                                  );
+                                },
+                              ),
+                            ),
+                            // Nội dung thông báo: tiêu đề và ngày
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data['title'] ?? '',
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    data['date'] ?? '',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    Text(
-                      day,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    // Popup menu (ở góc trên bên phải) để sửa hoặc xóa thông báo
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: PopupMenuButton<String>(
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            _showEditNotificationDialog(doc);
+                          } else if (value == 'delete') {
+                            _deleteNotification(doc.id);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Sửa'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Xóa'),
+                          ),
+                        ],
                       ),
                     ),
                   ],
-                ),
-              ),
-              title: Text(
-                notification['title']!,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text('Ngày: ${notification['date']}'),
-              onTap: () {
-                print('Xem thông báo: ${notification['title']}');
+                );
               },
             ),
           );
         },
+      ),
+      // Nút nổi để thêm thông báo
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddNotificationDialog,
+        backgroundColor: Colors.orange,
+        child: const Icon(Icons.add),
       ),
     );
   }

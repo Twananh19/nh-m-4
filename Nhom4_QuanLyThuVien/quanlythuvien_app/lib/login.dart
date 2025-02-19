@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qltv_app/main.dart';
+import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

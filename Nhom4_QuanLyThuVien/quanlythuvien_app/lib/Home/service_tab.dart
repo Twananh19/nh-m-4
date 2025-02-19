@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ServiceTab extends StatelessWidget {
-  final List<Map<String, dynamic>> services = [
+  // Chuyển danh sách services thành static const để có thể sử dụng trong const constructor
+  static const List<Map<String, dynamic>> services = [
     {
       'title': 'DỊCH VỤ ĐẶT PHÒNG LÀM VIỆC NHÓM',
       'icon': Icons.meeting_room,
@@ -29,6 +30,8 @@ class ServiceTab extends StatelessWidget {
     },
   ];
 
+  const ServiceTab({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +46,8 @@ class ServiceTab extends StatelessWidget {
           child: AppBar(
             title: const Text(
               'Dịch vụ',
-              style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: Colors.orange, fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
             backgroundColor: Colors.transparent,
@@ -56,12 +60,13 @@ class ServiceTab extends StatelessWidget {
         itemBuilder: (context, index) {
           final service = services[index];
           final dateParts = service['date']!.split('/');
-          final day = dateParts[0]; // Ngày
-          final month = dateParts[1]; // Tháng
-          final year = dateParts[2]; // Năm
+          final day = dateParts[0];
+          final month = dateParts[1];
+          final year = dateParts[2];
 
           return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            margin:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child: ListTile(
               leading: Container(
                 width: 60,
@@ -77,7 +82,7 @@ class ServiceTab extends StatelessWidget {
                       child: Icon(
                         service['icon'],
                         color: Colors.orange,
-                        size: 24, // Giảm kích thước icon để phù hợp
+                        size: 24,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -86,7 +91,7 @@ class ServiceTab extends StatelessWidget {
                         '$day/$month/$year',
                         style: const TextStyle(
                           color: Colors.black,
-                          fontSize: 10, // Giảm kích thước font chữ
+                          fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -97,9 +102,9 @@ class ServiceTab extends StatelessWidget {
               ),
               title: Text(
                 service['title'],
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style:
+                const TextStyle(fontWeight: FontWeight.bold),
               ),
-              // subtitle: Text('Ngày: ${service['date']}'),
               onTap: () {
                 print('Xem chi tiết dịch vụ: ${service['title']}');
               },

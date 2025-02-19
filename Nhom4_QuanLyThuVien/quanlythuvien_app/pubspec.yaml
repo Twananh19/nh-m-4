@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  intl: ^0.20.2
+  firebase_core: ^3.11.0
+  cloud_firestore: ^5.6.3
   url_launcher: ^6.1.7
 
   # The following adds the Cupertino Icons font to your application.
@@ -58,7 +62,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/phenikaa_logo.png
-    - assets/profile.png
+    - assets/profile.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
