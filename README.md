@@ -7,7 +7,7 @@
 ## Sơ đồ chức năng
 ![Ảnh ](image/sodochucnang.drawio.png)
 
-## class diagram
+## structure diagram
 ![Ảnh class diagram](image/class_diagram_mobile.png)
 
 ## Sequence Diagram
