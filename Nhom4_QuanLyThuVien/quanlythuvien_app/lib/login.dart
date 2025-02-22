@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'register.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,38 +12,40 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
-  String? _errorMessage;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  void _handleLogin() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+        email: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      // Không gọi Navigator.pushReplacement, để StreamBuilder tự chuyển hướng
+      // Sau khi đăng nhập thành công, chuyển hướng đến HomeScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
     } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = e.message;
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Đăng nhập thất bại: ${e.message}")),
+      );
     }
+  }
+
+  void _navigateToRegister() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+    );
   }
 
   @override
@@ -54,11 +57,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Logo
               Image.asset(
                 'assets/phenikaa_logo.png',
                 height: 80,
               ),
               const SizedBox(height: 40),
+              // Login Title
               const Text(
                 'Đăng nhập PU-LIC',
                 style: TextStyle(
@@ -68,10 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 32),
+              // Username TextField
               TextField(
-                controller: _emailController,
+                controller: _usernameController,
                 decoration: const InputDecoration(
-                  hintText: 'Email',
+                  hintText: 'Tên đăng nhập',
                   filled: true,
                   fillColor: Color(0xFFF5F6FA),
                   border: OutlineInputBorder(
@@ -81,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              // Password TextField
               TextField(
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
@@ -94,7 +101,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      _isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: const Color(0xFFFF6B00),
                     ),
                     onPressed: () {
@@ -105,18 +114,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              if (_errorMessage != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
-                ),
-              ],
               const SizedBox(height: 24),
+              // Login Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleLogin,
+                  onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1A237E),
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -124,35 +127,41 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
+                  child: const Text(
                     'Đăng nhập',
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
+              // Forgot Password and Register Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Thêm logic quên mật khẩu nếu cần
+                    },
                     child: const Text(
                       'Quên mật khẩu?',
-                      style: TextStyle(color: Color(0xFF1A237E)),
+                      style: TextStyle(
+                        color: Color(0xFF1A237E),
+                      ),
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _navigateToRegister,
                     child: const Text(
-                      'Đổi mật khẩu',
-                      style: TextStyle(color: Color(0xFF1A237E)),
+                      'Đăng ký',
+                      style: TextStyle(
+                        color: Color(0xFF1A237E),
+                      ),
                     ),
                   ),
                 ],
               ),
               const Spacer(),
+              // Footer
               const Text(
                 'All rights reserved Phenikaa University',
                 style: TextStyle(color: Colors.grey),

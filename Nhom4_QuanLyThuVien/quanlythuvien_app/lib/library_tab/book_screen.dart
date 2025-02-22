@@ -51,7 +51,7 @@ class _BookScreenState extends State<BookScreen> {
                   ),
                   TextField(
                     controller: statusController,
-                    decoration: InputDecoration(labelText: "Trạng thái"),
+                    decoration: InputDecoration(labelText: "Số lượng"),
                   ),
                   Row(
                     children: [
@@ -135,7 +135,7 @@ class _BookScreenState extends State<BookScreen> {
                   ),
                   TextField(
                     controller: statusController,
-                    decoration: InputDecoration(labelText: "Trạng thái"),
+                    decoration: InputDecoration(labelText: "Số lượng"),
                   ),
                   Row(
                     children: [
@@ -393,7 +393,7 @@ class _BookScreenState extends State<BookScreen> {
                             ),
                             SizedBox(height: 3),
                             Text(
-                              "Trạng thái: ${data['status'] ?? ''}",
+                              "Số lượng: ${data['status'] ?? ''}",
                               style: TextStyle(fontSize: 13, color: Colors.black54),
                             ),
                             if (data['isOnline'] == true)
