@@ -8,7 +8,7 @@
 ![Ảnh ](image/sodochucnang.drawio.png)
 
 ## structure diagram
-![Ảnh class diagram](image/class_diagram_mobile.png)
+![Ảnh class diagram](image/class_diagram.png)
 
 ## Sequence Diagram
 ![Ảnh ](image/sequeDia.png)
